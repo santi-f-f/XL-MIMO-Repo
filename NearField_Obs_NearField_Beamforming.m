@@ -371,36 +371,7 @@ line_Radi.HeadLength = 7.5;
 
 
 
-
-
-
-
-f_Beam_Patterns_NearField_FarField_1 = figure;
-set(f_Beam_Patterns_NearField_FarField_1, 'Position',  [600 580, 560, 420])
-set(f_Beam_Patterns_NearField_FarField_1, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
-set(f_Beam_Patterns_NearField_FarField_1, 'defaultLegendInterpreter','latex');
-set(f_Beam_Patterns_NearField_FarField_1, 'defaultTextInterpreter','latex','defaultTextFontSize',14);
-set(f_Beam_Patterns_NearField_FarField_1, 'defaultLineLineWidth',1.5);
-set(f_Beam_Patterns_NearField_FarField_1, 'color','w');
-plot(Delta_theta,(G_NF_NF),'r')
-hold on
-plot(Delta_theta,(G_NF_NF_18),'k')
-plot(Delta_theta,(G_NF_NF_19),'b')
-plot(Delta_theta,(G_NF_FF_COL),'g')
-grid on
-xlabel('$\Delta_{\theta}$')
-ylabel('$G_{NF,NF}(r, \theta; r`, \theta`)$')
-legend('Modular, (11)','Modular, (18)','Modular, (19)', 'Collocated, $\Gamma$ = M')
-
-
-
-
-
-
-
-
-
-% Polar coordinates
+%% Polar coordinates
 f_Beam_Patterns_NearField_FarField_Spherical = figure;
 set(f_Beam_Patterns_NearField_FarField_Spherical, 'Position',  [1220 60, 660, 520])
 set(f_Beam_Patterns_NearField_FarField_Spherical, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
@@ -413,41 +384,3 @@ P = polarpattern(Delta_theta*90,(G_NF_NF),'AngleDirection','cw','AngleAtTop',-90
 add(P,Delta_theta*90,(G_NF_NF_18))
 add(P,Delta_theta*90,(G_NF_NF_19))
 add(P,Delta_theta*90,(G_NF_FF_COL))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% Pruebas
-f_Beam_Patterns_NearField_FarField_1 = figure;
-set(f_Beam_Patterns_NearField_FarField_1, 'Position',  [600 50, 560, 420])
-set(f_Beam_Patterns_NearField_FarField_1, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
-set(f_Beam_Patterns_NearField_FarField_1, 'defaultLegendInterpreter','latex');
-set(f_Beam_Patterns_NearField_FarField_1, 'defaultTextInterpreter','latex','defaultTextFontSize',14);
-set(f_Beam_Patterns_NearField_FarField_1, 'defaultLineLineWidth',1.5);
-set(f_Beam_Patterns_NearField_FarField_1, 'color','w');
-plot((G_NF_NF),Delta_theta,'r')
-hold on
-plot((G_NF_NF_18),Delta_theta,'k')
-plot((G_NF_NF_19),Delta_theta,'b')
-plot((G_NF_FF_COL),Delta_theta,'g')
-grid on
-xlabel('$\Delta_{\theta}$')
-ylabel('$G_{NF,NF}(r, \theta; r`, \theta`)$')
-legend('Modular, (11)','Modular, (18)','Modular, (19)', 'Collocated, $\Gamma$ = M')
