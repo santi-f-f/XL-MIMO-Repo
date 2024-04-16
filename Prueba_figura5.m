@@ -23,7 +23,6 @@ D = ((N - 1)*Gamma + (M - 1))*d;    % Total physical size of the modular XL-ULA 
 NN = -(N-1)/2:(N-1)/2;
 MM = -(M-1)/2:(M-1)/2;
 
-theta_prima = -pi/2:1e-3:pi/2;                                                             % Variable angle
 
 % Position of the m-th element within module n
 y = zeros(1,N*M);
@@ -47,7 +46,7 @@ end
 r = 200;                                                % Distance from the array center
 
 theta = 0;                                              % Angle with respect to the positive x-axis, θ ∈ [-π/2, π/2]
-
+theta_prima = 0;
 q = [r*cos(theta), r*sin(theta)].';
 
 %% Distance between q and the m-th element in module n
@@ -59,40 +58,38 @@ for i = 1:length(y)
 end
 
 %% Generate the beamforming with the observation of the hypotetical user
-r_n0_BF = zeros(length(y_n),length(theta_prima));
-sin_theta_n_BF = zeros(length(y_n),length(theta_prima));
-a_BF = zeros(length(y),length(theta_prima));
-for tv = 1:length(theta_prima)
-    b_approx_2 = zeros(length(MM),length(y_n));
-    a_BF_temp = [];
-    for in = 1:length(y_n)
-        r_n0_BF(in,tv) = sqrt(r^2 - 2*r*y_n(in)*sin(theta_prima(tv)) + y_n(in)^2);
+r_n0_BF = zeros(length(y_n),1);
+sin_theta_n_BF = zeros(length(y_n),1);
+a_BF = zeros(length(y),1);
+b_approx_2 = zeros(length(MM),length(y_n));
+a_BF_temp = [];
+for in = 1:length(y_n)
+    r_n0_BF(in) = sqrt(r^2 - 2*r*y_n(in)*sin(theta_prima) + y_n(in)^2);
 
-        sin_theta_n_BF(in,tv) = (r*sin(theta_prima(tv)) - y_n(in))/r_n0_BF(in,tv);
+    sin_theta_n_BF(in) = (r*sin(theta_prima) - y_n(in))/r_n0_BF(in);
+    %sin_theta_n_BF(in) = sin(theta_prima);
 
-        for m = 1:length(MM)
-            b_approx_2(m,in) = exp(1i*2*pi*MM(m)*d*sin_theta_n_BF(in,tv)/lambda);
-        end
-
-        a_BF_temp = [a_BF_temp; (exp(-1i*2*pi*r_n0_BF(in,tv)/lambda)*b_approx_2(:,in))];
+    for m = 1:length(MM)
+        b_approx_2(m,in) = exp(1i*2*pi*MM(m)*d*sin_theta_n_BF(in)/lambda);
     end
-    a_BF(:,tv) = a_BF_temp;
-end
 
+    a_BF_temp = [a_BF_temp; (exp(-1i*2*pi*r_n0_BF(in)/lambda)*b_approx_2(:,in))];
+end
+a_BF = a_BF_temp;
 
 
 
 %% User location
 % Generate a grid with every possible locations of the user 
 % (rectangular coordinates)
-y_pos = 0:2:10;
-x_pos = 0:2:40;
+y_pos = -200:2:200;
+x_pos = 0:2:600;
 [X,Y] = meshgrid(x_pos,y_pos);
 
 [Theta_Var,R_Var] = cart2pol(X,Y);  
 
 f_locations = figure;
-set(f_locations, 'Position',  [20, 60, 560, 420*2])
+%set(f_locations, 'Position',  [20, 60, 560, 420*2])
 set(f_locations, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
 set(f_locations, 'defaultLegendInterpreter','latex');
 set(f_locations, 'defaultTextInterpreter','latex','defaultTextFontSize',14);
@@ -137,31 +134,18 @@ a_ARV = a_USW_ARV_temp;
 
 
 %% Evaluation of the power reached by the user in every possible location
-G_NF_NF = zeros(length(theta_prima),length(x_pos),length(y_pos));
-for tv = 1:length(theta_prima)
-    G_NF_NF(tv,:,:) = (1/(M*N))*abs(tensorprod(a_BF(:,tv)',a_ARV,2,1));
-end
+G_NF_NF = (1/(M*N))*abs(squeeze(tensorprod(a_BF',a_ARV,2,1)));
 
-Power = squeeze(10*log10(mean(G_NF_NF.*conj(G_NF_NF)))).';
+Power = 10*log10(G_NF_NF.');
 
 f_power = figure;
-set(f_power, 'Position',  [680, 480, 560, 420])
+%set(f_power, 'Position',  [680, 480, 560, 420])
 set(f_power, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
 set(f_power, 'defaultLegendInterpreter','latex');
 set(f_power, 'defaultTextInterpreter','latex','defaultTextFontSize',14);
 set(f_power,'defaultLineLineWidth',2);
-set(f_power,'color','w');
-contour(X,Y,Power)
+surf(X,Y,Power)
+view(2)
+shading interp
+colormap(jet);
 
-
-f_beamforming = figure;
-set(f_beamforming, 'Position',  [1260, 480, 560, 420])
-set(f_beamforming, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
-set(f_beamforming, 'defaultLegendInterpreter','latex');
-set(f_beamforming, 'defaultTextInterpreter','latex','defaultTextFontSize',14);
-set(f_beamforming,'defaultLineLineWidth',2);
-set(f_beamforming,'color','w');
-hold on
-for tv = 1:length(theta_prima) 
-    contour(X,Y,10*log10(squeeze(G_NF_NF(tv,:,:))).')
-end
